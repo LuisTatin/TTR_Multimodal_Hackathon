@@ -41,3 +41,8 @@ __pycache__/
 .streamlit/
 docker/db/postgres_data/
 docker/db/minio_data/
+data/raw/
+data/processed/
+*.parquet
+*.csv
+*.xlsx
