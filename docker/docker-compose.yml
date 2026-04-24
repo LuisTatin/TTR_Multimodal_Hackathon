@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # 1. Banco de Dados: SQL e metadados do MLflow
+  db:
+    image: postgres:15
+    container_name: mlflow_db
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: maintenance_db
+    ports:
+      - "5434:5433"
+    volumes:
+      - ./db/postgres_data:/var/lib/postgresql/data
+
+  # 2. MinIO: O "S3 Local" para salvar os modelos (.pkl)
+  s3:
+    image: minio/minio
+    container_name: mlflow_s3
+    restart: always
+    ports:
+      - "9000:9000" # API
+      - "9001:9001" # Console/UI
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: password123
+    command: server /data --console-address ":9001"
+    volumes:
+      - ./db/minio_data:/data
+
+  # 3. MLflow Tracking Server
+  mlflow:
+    # Mudamos para 'latest' para garantir que ele tenha todos os novos endpoints
+    image: ghcr.io/mlflow/mlflow:latest
+    container_name: mlflow_server
+    restart: always
+    ports:
+      - "5001:5000"
+    environment:
+      - AWS_ACCESS_KEY_ID=admin
+      - AWS_SECRET_ACCESS_KEY=password123
+      - MLFLOW_S3_ENDPOINT_URL=http://s3:9000
+      - MLFLOW_S3_IGNORE_TLS=true
+    depends_on:
+      - db
+      - s3
+    command: >
+      bash -c "pip install psycopg2-binary && mlflow server --backend-store-uri postgresql://user:password@db:5432/maintenance_db --default-artifact-root s3://mlflow-artifacts/ --host 0.0.0.0 --port 5000"

@@ -1,0 +1,43 @@
+# =========================
+# Ambientes Virtuais (CRÍTICO)
+# =========================
+.venv/
+venv/
+env/
+
+# =========================
+# Python Cache e Testes
+# =========================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+
+# =========================
+# Sistema Operativo (macOS)
+# =========================
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# =========================
+# IDEs e Editores
+# =========================
+.vscode/
+.idea/
+*.swp
+
+# =========================
+# Jupyter Notebooks
+# =========================
+.ipynb_checkpoints/
+
+# =========================
+# Arquivos de Log e Streamlit
+# =========================
+*.log
+.streamlit/
+docker/db/postgres_data/
+docker/db/minio_data/
